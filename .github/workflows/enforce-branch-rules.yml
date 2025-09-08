@@ -1,0 +1,31 @@
+name: Enforce Branch Rules
+
+on:
+  pull_requests:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  validate-branch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validate source and target branches
+        run: |
+          echo "Source branch: ${{ github.head_ref }}"
+          echo "Target branch: ${{ github.base_ref }}"
+
+          if [[ "${{ github.base_ref }}" == "stage" && "${{ github.head_ref }}" != "devel" ]]; then
+            echo "Only 'devel' can merge into 'stage'"
+            exit 1
+          fi
+
+          if [[ "${{ github.base_ref }}" == "prod" && "${{ github.head_ref }}" != "stage" ]]; then
+            echo "Only 'stage' can merge into 'prod'"
+            exit 1
+          fi
+
+          if [[ "${{ github.base_ref }}" == "devel" && "${{ github.head_ref }}" ~= ^(feature|hotfix)/ ]]; then
+            echo "Only 'feature/*' or 'hotfix/*' can merge into 'devel'"
+            exit 1
+          fi
+
+          echo "Branch rules passed"
