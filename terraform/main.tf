@@ -1,5 +1,5 @@
 resource "aws_s3_bucket" "app" {
-    bucket = "${var.bucket_name}-${terraform.workspace}-mgarcia-app"
+  bucket = "${var.bucket_name}-${terraform.workspace}-mgarcia-app"
 }
 
 resource "aws_s3_bucket_public_access_block" "app_block_public_access" {
@@ -10,7 +10,7 @@ resource "aws_s3_bucket_public_access_block" "app_block_public_access" {
   ignore_public_acls      = true
   restrict_public_buckets = true
 
-  depends_on = [ aws_s3_bucket.app ]
+  depends_on = [aws_s3_bucket.app]
 }
 
 resource "aws_s3_bucket" "logs" {
@@ -24,7 +24,7 @@ resource "aws_s3_bucket_ownership_controls" "logs_ownership" {
     object_ownership = "BucketOwnerPreferred"
   }
 
-  depends_on = [ aws_s3_bucket.logs ]
+  depends_on = [aws_s3_bucket.logs]
 }
 
 resource "aws_s3_bucket_public_access_block" "logs_block" {
@@ -46,11 +46,11 @@ resource "aws_s3_bucket_acl" "logs_acl" {
 }
 
 resource "aws_cloudfront_origin_access_control" "oac" {
-    name = "node-app-oac"
-    description = "OAC for private S3 bucket"
-    origin_access_control_origin_type = "s3"
-    signing_behavior = "always"
-    signing_protocol = "sigv4"
+  name                              = "node-app-oac"
+  description                       = "OAC for private S3 bucket"
+  origin_access_control_origin_type = "s3"
+  signing_behavior                  = "always"
+  signing_protocol                  = "sigv4"
 }
 
 resource "aws_cloudfront_distribution" "cdn" {
@@ -79,7 +79,7 @@ resource "aws_cloudfront_distribution" "cdn" {
   }
 
   logging_config {
-    bucket = aws_s3_bucket.logs.bucket_domain_name
+    bucket          = aws_s3_bucket.logs.bucket_domain_name
     include_cookies = false
     prefix          = "cloudfront-logs/"
   }
@@ -102,19 +102,27 @@ resource "aws_s3_bucket_policy" "app_policy" {
     Version = "2012-10-17",
     Statement = [
       {
-        Sid: "AllowCloudFrontServicePrincipalReadOnly",
-        Effect: "Allow",
-        Principal: {
-          Service: "cloudfront.amazonaws.com"
+        Sid : "AllowCloudFrontServicePrincipalReadOnly",
+        Effect : "Allow",
+        Principal : {
+          Service : "cloudfront.amazonaws.com"
         },
-        Action: "s3:GetObject",
-        Resource: "${aws_s3_bucket.app.arn}/*",
-        Condition: {
-          StringEquals: {
-            "AWS:SourceArn": "${aws_cloudfront_distribution.cdn.arn}"
+        Action : "s3:GetObject",
+        Resource : "${aws_s3_bucket.app.arn}/*",
+        Condition : {
+          StringEquals : {
+            "AWS:SourceArn" : "${aws_cloudfront_distribution.cdn.arn}"
           }
         }
       }
     ]
   })
+}
+
+resource "null_resource" "upload_build_to_s3" {
+  provisioner "local-exec" {
+    command = "aws s3 sync ../build s3://${aws_s3_bucket.app.bucket}"
+  }
+
+  depends_on = [aws_s3_bucket.app]
 }
