@@ -1,32 +1,29 @@
 name: Terraform Deploy
 
 on:
-  workflow_run:
-    workflows: ["Build Node App"]
-    types: [completed]
-
+  pull_request:
+    branches:
+      - devel
+      - stage
+      - prod
+    types: [closed]
 jobs:
   deploy:
-    if: >
-      github.event.workflow_run.conclusion == 'success' &&
-      github.event.workflow_run.event == 'pull_request' &&
-      github.event.workflow_run.pull_requests[0].merged == true
+    if: github.event.workflow_run.pull_requests.merged == true
     runs-on: ubuntu-latest
-    env:
-      AWS_REGION: us-east-1
-      S3_BUCKET: your-bucket-name
-      TF_DIR: ./terraform
 
     steps:
-      - name: Download build from previous run
-        uses: actions/download-artifact@v4
-        with:
-          name: build
-          path: ./build
-          run-id: ${{ github.event.workflow_run.id }}
-
-      - name: Checkout Terraform
+      - name: Checkout Code
         uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '15'
+          registry-url: 'https://npm.pkg.github.com'
+
+      - name: Install package
+        run: npm install @mgarciam200593/rdicidr
 
       - name: LS
         run: ls -la

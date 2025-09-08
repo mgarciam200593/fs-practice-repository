@@ -1,7 +1,6 @@
 {
-  "name": "rdicidr",
+  "name": "@mgarciam200593/rdicidr",
   "version": "0.1.0",
-  "private": true,
   "dependencies": {
     "@testing-library/jest-dom": "^5.11.9",
     "@testing-library/react": "^11.2.5",
@@ -20,6 +19,12 @@
     "eject": "react-scripts eject",
     "lint": "eslint ./src/",
     "prettier": "prettier --write ./src/"
+  },
+  "files": [
+    "build"
+  ],
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com/"
   },
   "eslintConfig": {
     "extends": [
