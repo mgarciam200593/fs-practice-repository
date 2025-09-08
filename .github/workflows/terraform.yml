@@ -31,7 +31,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: build
-          run-id: ${{ steps.get_run.outputs.id }}
+          run-id: ${{ steps.find_run.outputs.id }}
           path: ./build
 
       - name: Setup Terraform
