@@ -11,6 +11,12 @@ jobs:
   deploy:
     if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
+    environment: ${{ github.ref_name }}
+
+    env:
+      AWS_REGION: us-east-1
+      BUCKET_NAME: devops-terraform-aws
+      TF_WORKING_DIRECTORY: terraform
 
     steps:
       - name: Checkout Code
@@ -44,8 +50,30 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           path: build/
 
-      - name: LS
-        run: ls -la build/
-
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Terraform Init
+        working-directory: ${{ env.TF_WORKING_DIRECTORY }}
+        run: terraform init
+
+      - name: Terraform Workspace Creation and Selection
+        working-directory: ${{ env.TF_WORKING_DIRECTORY }}
+        run: |
+          terraform workspace new ${{ vars.ENV }}
+          terraform workspace select ${{ vars.ENV }}
+
+      - name: Terraform Validate
+        working-directory: ${{ env.TF_WORKING_DIRECTORY }}
+        run: terraform validate -var 'bucket_name=${{ env.BUCKET_NAME }}'
+
+      - name: Terraform Plan
+        working-directory: ${{ env.TF_WORKING_DIRECTORY }}
+        run: terraform plan -var 'bucket_name=${{ env.BUCKET_NAME }}'
