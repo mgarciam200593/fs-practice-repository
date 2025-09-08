@@ -1,5 +1,5 @@
 {
-  "name": "rdicidr",
+  "name": "@mgarciam200593/rdicidr",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
@@ -20,6 +20,9 @@
     "eject": "react-scripts eject",
     "lint": "eslint ./src/",
     "prettier": "prettier --write ./src/"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com/"
   },
   "eslintConfig": {
     "extends": [
