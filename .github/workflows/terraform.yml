@@ -1,0 +1,26 @@
+name: Deploy NPM App
+
+on:
+  pull_request:
+    branches:
+      - devel
+      - stage
+      - prod
+    types: [closed]
+
+jobs:
+  deploy:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Download build artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: build
+          path: ./build
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@V2
