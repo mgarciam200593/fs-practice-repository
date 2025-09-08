@@ -24,7 +24,7 @@ jobs:
           fi
 
           if [[ "${{ github.base_ref }}" = "devel" ]]; then
-            [[ ! "${{ github.head_ref }}" =~ ^(feature|hotfix)/ ]]; then
+            if [[ ! "${{ github.head_ref }}" =~ ^(feature|hotfix)/ ]]; then
               echo "Only 'feature/*' or 'hotfix/*' can merge into 'devel'"
               exit 1
             fi
