@@ -1,4 +1,4 @@
-name: Deploy NPM App
+name: Build Node App
 
 on:
   pull_request:
