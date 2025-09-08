@@ -16,10 +16,26 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
+      - name: Install GitHub CLI
+        run: sudo apt-get install gh jq -y
+
+      - name: Get build run-id via GitHub CLI
+        id: get_run
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh auth setup-git
+          RUN_ID=$(gh api \
+            repos/${{ github.repository }}/actions/workflows/build-app.yml/runs \
+            -F head_sha=${{ github.event.pull_request.head.sha }} \
+            --jq '.workflow_runs[0].id')
+          echo "::set-output name=id::$RUN_ID"
+
       - name: Download build artifact
         uses: actions/download-artifact@v4
         with:
           name: build
+          run-id: ${{ steps.get_run.outputs.id }}
           path: ./build
 
       - name: Setup Terraform
