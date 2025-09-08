@@ -67,7 +67,7 @@ jobs:
       - name: Terraform Workspace Creation and Selection
         working-directory: ${{ env.TF_WORKING_DIRECTORY }}
         run: |
-          terraform workspace new ${{ vars.ENV }}
+          terraform workspace list | grep "${{ vars.ENV }}" || terraform workspace new ${{ vars.ENV }}
           terraform workspace select ${{ vars.ENV }}
 
       - name: Terraform Validate
