@@ -23,4 +23,4 @@ jobs:
           path: ./build
 
       - name: Setup Terraform
-        uses: hashicorp/setup-terraform@V2
+        uses: hashicorp/setup-terraform@v2
