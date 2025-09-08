@@ -42,9 +42,10 @@ jobs:
           name: build
           run-id: ${{ steps.get_run_id.outputs.run_id }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
+          path: build/
 
       - name: LS
-        run: ls -la
+        run: ls -la build/
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
