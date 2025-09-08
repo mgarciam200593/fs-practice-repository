@@ -31,7 +31,9 @@ jobs:
         run: npm run prettier
 
       - name: Run Tests
-        run: CI=true npm run test
+        env:
+          CI: true
+        run: npm run test
 
       - name: Build
         run: npm run build
