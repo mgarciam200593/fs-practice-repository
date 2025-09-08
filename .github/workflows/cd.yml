@@ -28,7 +28,7 @@ jobs:
           NODE_AUTH_TOKEN: ${{ secrets.PACKAGES_PAT }}
 
       - name: LS
-        run: ls -la
+        run: ls -la node_modules/@mgarciam200593/rdicidr
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
