@@ -10,7 +10,7 @@ resource "aws_s3_bucket_public_access_block" "app_block_public_access" {
   ignore_public_acls      = true
   restrict_public_buckets = true
 
-  depends_on = [ aws_s3_bucket.bucket ]
+  depends_on = [ aws_s3_bucket.app ]
 }
 
 resource "aws_s3_bucket" "logs" {
@@ -23,6 +23,8 @@ resource "aws_s3_bucket_ownership_controls" "logs_ownership" {
   rule {
     object_ownership = "BucketOwnerPreferred"
   }
+
+  depends_on = [ aws_s3_bucket.logs ]
 }
 
 resource "aws_s3_bucket_public_access_block" "logs_block" {
