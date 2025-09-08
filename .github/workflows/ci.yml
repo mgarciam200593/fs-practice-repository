@@ -6,7 +6,7 @@ on:
       - devel
       - stage
       - prod
-    types: [closed]
+    types: [opened, synchronize, reopened]
 
 jobs:
   build:
