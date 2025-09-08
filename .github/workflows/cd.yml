@@ -72,7 +72,7 @@ jobs:
 
       - name: Terraform Validate
         working-directory: ${{ env.TF_WORKING_DIRECTORY }}
-        run: terraform validate -var 'bucket_name=${{ env.BUCKET_NAME }}'
+        run: terraform validate
 
       - name: Terraform Plan
         working-directory: ${{ env.TF_WORKING_DIRECTORY }}
