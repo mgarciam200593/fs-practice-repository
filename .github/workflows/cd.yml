@@ -24,6 +24,8 @@ jobs:
 
       - name: Install package
         run: npm install @mgarciam200593/rdicidr
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.PACKAGES_PAT }}
 
       - name: LS
         run: ls -la
