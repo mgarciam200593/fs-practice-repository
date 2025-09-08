@@ -1,6 +1,5 @@
 {
   "name": "@mgarciam200593/rdicidr",
-  "version": "0.1.1",
   "dependencies": {
     "@testing-library/jest-dom": "^5.11.9",
     "@testing-library/react": "^11.2.5",
