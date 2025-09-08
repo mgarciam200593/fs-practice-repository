@@ -77,3 +77,7 @@ jobs:
       - name: Terraform Plan
         working-directory: ${{ env.TF_WORKING_DIRECTORY }}
         run: terraform plan -var 'bucket_name=${{ env.BUCKET_NAME }}'
+
+      - name: Terraform Apply
+        working-directory: ${{ env.TF_WORKING_DIRECTORY }}
+        run: terraform apply -var 'bucket_name=${{ env.BUCKET_NAME }}' -auto-approve
