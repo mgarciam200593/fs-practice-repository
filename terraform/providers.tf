@@ -1,9 +1,9 @@
 provider "aws" {
   default_tags {
     tags = {
-      "Environment"   = "${terraform.workspace}"
-      "Certification" = "Devops"
-      "Managed-by"    = "Terraform"
+      "Environment" = "${var.environment}"
+      "Project"     = "Fullstack Devops AWS+Terraform"
+      "Managed By"  = "Terraform"
     }
   }
 }

@@ -1,47 +1,45 @@
-name: Build Node App
+name: CI Pipeline
 
-on:
+on: 
   pull_request:
     branches:
-      - devel
-      - stage
       - prod
+      - stage
+      - devel
     types: [opened, synchronize, reopened]
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v3
+    steps: 
+      - name: Check out code
+        uses: actions/checkout@v5
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
+      - name: Set up Node.js
+        uses: actions/setup-node@v5
         with:
           node-version: '15'
-          registry-url: 'https://npm.pkg.github.com'
 
-      - name: Install Dependencies
+      - name: Install dependencies
         run: npm install
 
-      - name: Linter
+      - name: Run linter
         run: npm run lint
 
-      - name: Formatter
+      - name: Run formatter
         run: npm run prettier
 
-      - name: Run Tests
-        env:
+      - name: Run tests
+        env: 
           CI: true
         run: npm run test
 
-      - name: Build
+      - name: Build project
         run: npm run build
 
-      - name: Upload Artifact
+      - name: Upload Build Artifact
         uses: actions/upload-artifact@v4
         with:
           name: build
           path: build/
-
