@@ -65,23 +65,23 @@ jobs:
           aws-region: ${{ env.AWS_REGION }}
 
       - name: Terraform Init
-        workking-directory: ${{ env.TF_WORKING_DIRECTORY }}
+        working-directory: ${{ env.TF_WORKING_DIRECTORY }}
         run: terraform init
 
       - name: Terraform Workspace Creation and Selection
-        workking-directory: ${{ env.TF_WORKING_DIRECTORY }}
+        working-directory: ${{ env.TF_WORKING_DIRECTORY }}
         run: |
           terraform workspace list | grep "${{ vars.ENV }}" || terraform workspace new ${{ vars.ENV }}
           terraform workspace select ${{ vars.ENV }}
 
       - name: Terraform Validate
-        workking-directory: ${{ env.TF_WORKING_DIRECTORY }}
+        working-directory: ${{ env.TF_WORKING_DIRECTORY }}
         run: terraform validate
 
       - name: Terraform Plan
-        workking-directory: ${{ env.TF_WORKING_DIRECTORY }}
+        working-directory: ${{ env.TF_WORKING_DIRECTORY }}
         run: terraform plan -var 'bucket_name=${{ env.BUCKET_NAME }}' -var 'environment=${{ vars.ENV }}'
 
       - name: Terraform Apply
-        workking-directory: ${{ env.TF_WORKING_DIRECTORY }}
+        working-directory: ${{ env.TF_WORKING_DIRECTORY }}
         run: terraform apply -var 'bucket_name=${{ env.BUCKET_NAME }}' -var 'environment=${{ vars.ENV }}' -auto-approve
