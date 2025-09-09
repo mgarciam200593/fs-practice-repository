@@ -1,3 +1,4 @@
+# In this file put all the logic to crete the proper infraestructure
 terraform {
   required_providers {
     aws = {
@@ -5,5 +6,5 @@ terraform {
       version = ">=6.0"
     }
   }
-  required_version = ">=1.5"
+  required_version = ">=1.4"
 }

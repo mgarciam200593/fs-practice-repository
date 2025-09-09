@@ -1,4 +1,4 @@
-output "public_url" {
-  value       = aws_cloudfront_distribution.cdn.domain_name
-  description = "Domain Name of CloudFront Distribution to make requests to app"
+output "domain_name" {
+  value       = aws_cloudfront_distribution.s3_distribution.domain_name
+  description = "Public URL to access app"
 }

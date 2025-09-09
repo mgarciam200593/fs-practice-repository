@@ -3,3 +3,8 @@ variable "bucket_name" {
   type        = string
   description = "Application Bucket Name"
 }
+
+variable "environment" {
+  type        = string
+  description = "Environment"
+}
