@@ -3,7 +3,7 @@ resource "aws_s3_bucket" "app" {
   bucket = "${var.bucket_name}-${var.environment}-devops-app"
 }
 
-resource "aws_s3_public_access_block" "app_block_public_access" {
+resource "aws_s3_bucket_public_access_block" "app_block_public_access" {
   bucket = aws_s3_bucket.app.id
 
   block_public_acls       = true
