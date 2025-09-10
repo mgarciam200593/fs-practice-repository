@@ -1,0 +1,87 @@
+name: CD Pipeline
+
+on: 
+  pull_request:
+    branches:
+      - prod
+      - stage
+      - devel
+    types: [closed]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: ${{ github.ref_name }}
+
+    env:
+      AWS_REGION: us-east-1
+      BUCKET_NAME: devops-terraform-aws
+      TF_WORKING_DIRECTORY: terraform
+
+    steps: 
+      - name: Check out code
+        uses: actions/checkout@v5
+
+      - name: Get latest successful run ID from CI Pipeline
+        id: get_run_id
+        run: |
+          WORKFLOW_NAME="CI Pipeline"
+          REPO="${{ github.repository }}"
+          TOKEN="${{ secrets.GITHUB_TOKEN }}"
+
+          WORKFLOW_ID=$(curl -L \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer $TOKEN" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            https://api.github.com/repos/$REPO/actions/workflows \
+            | jq -r ".workflows[] | select(.name==\"$WORKFLOW_NAME\") | .id")
+
+          RUN_ID=$(curl -L \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer $TOKEN" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            https://api.github.com/repos/$REPO/actions/workflows/$WORKFLOW_ID/runs?status=success \
+            | jq -r ".workflow_runs[0].id")
+
+          echo "Latest run id: $RUN_ID"
+          echo "run_id=$RUN_ID" >> $GITHUB_OUTPUT
+
+      - name: Download Build Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: build
+          path: build/
+          run-id: ${{ steps.get_run_id.outputs.run_id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v5.0.0
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Terraform Init
+        working-directory: ${{ env.TF_WORKING_DIRECTORY }}
+        run: terraform init
+
+      - name: Terraform Workspace Creation and Selection
+        working-directory: ${{ env.TF_WORKING_DIRECTORY }}
+        run: |
+          terraform workspace list | grep "${{ vars.ENV }}" || terraform workspace new ${{ vars.ENV }}
+          terraform workspace select ${{ vars.ENV }}
+
+      - name: Terraform Validate
+        working-directory: ${{ env.TF_WORKING_DIRECTORY }}
+        run: terraform validate
+
+      - name: Terraform Plan
+        working-directory: ${{ env.TF_WORKING_DIRECTORY }}
+        run: terraform plan -var 'bucket_name=${{ env.BUCKET_NAME }}' -var 'environment=${{ vars.ENV }}'
+
+      - name: Terraform Apply
+        working-directory: ${{ env.TF_WORKING_DIRECTORY }}
+        run: terraform apply -var 'bucket_name=${{ env.BUCKET_NAME }}' -var 'environment=${{ vars.ENV }}' -auto-approve
