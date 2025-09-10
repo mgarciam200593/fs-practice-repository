@@ -6,6 +6,7 @@ on:
 
 jobs:
   validate-branch:
+    name: Enforce Branch Rules
     runs-on: ubuntu-latest
     steps:
       - name: Validate source and target branches
